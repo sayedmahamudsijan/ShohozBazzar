@@ -28,7 +28,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Bengali', sans-serif;
             line-height: 1.6;
             color: var(--dark);
-            background: var(--light);
+            background: linear-gradient(180deg, #eef2ff 0%, var(--light) 35%, #fef3c7 100%);
         }
 
         a {
@@ -161,9 +161,10 @@
 
         /* Categories */
         .categories {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px 0;
             border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(6px);
         }
 
         .category-nav {
@@ -229,6 +230,7 @@
             box-shadow: var(--shadow);
             transition: all 0.3s;
             cursor: pointer;
+            border: 1px solid rgba(99, 102, 241, 0.08);
         }
 
         .product-card:hover {
@@ -354,6 +356,11 @@
             margin-bottom: 35px;
         }
 
+        .section-card.eeaaao {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(245, 158, 11, 0.12));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
         .limited-badge {
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
@@ -398,6 +405,10 @@
         .drop-actions {
             display: flex;
             gap: 10px;
+        }
+
+        .drop-actions .btn {
+            flex: 1;
         }
 
         /* Product Detail Modal */
@@ -679,6 +690,11 @@
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 15px;
             }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         .loading {
@@ -732,11 +748,11 @@
     <!-- Main Content -->
     <main>
         <div class="container">
-            <section class="section-card" id="eeaaoSection">
+            <section class="section-card eeaaao" id="eeaaoSection">
                 <div class="section-header">
                     <div>
-                        <h2 id="dropTitle">Everything Everywhere All at Once</h2>
-                        <p class="section-subtitle" id="dropSubtitle">সীমিত সংখ্যক পণ্যের হঠাৎ ড্রপ। প্রতিবারই নতুন চমক!</p>
+                        <h2 id="dropTitle">সবখানে সবকিছু একসাথে</h2>
+                        <p class="section-subtitle" id="dropSubtitle">সব ক্যাটাগরির সীমিত স্টক আইটেম, একক ভ্যারিয়েন্টেই উপলব্ধ।</p>
                     </div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                         <span class="limited-badge" id="dropLimitedBadge">⚡ সীমিত স্টক</span>
@@ -867,13 +883,13 @@
                 remove: 'সরান',
                 moveToCart: 'কার্টে যোগ করুন',
                 dropTitle: 'সবখানে সবকিছু একসাথে',
-                dropSubtitle: 'সীমিত সংখ্যক পণ্যের হঠাৎ ড্রপ। প্রতিবারই নতুন চমক!',
+                dropSubtitle: 'সব ক্যাটাগরির সীমিত স্টক আইটেম, একক ভ্যারিয়েন্টেই উপলব্ধ।',
                 dropLimitedBadge: '⚡ সীমিত স্টক',
                 dropBtn: 'Click here',
                 dropLinkText: 'EEAAO',
                 dropQty: 'স্টক',
                 dropSoldOut: 'স্টক শেষ',
-                dropEmpty: 'এখন কোনো ড্রপ নেই। আবার চেষ্টা করুন।',
+                dropEmpty: 'এখন কোনো সীমিত আইটেম নেই। পরে দেখুন।',
                 dropAdd: 'দ্রুত যোগ করুন',
                 sectionSubtitle: 'নির্বাচিত ক্যাটাগরি অনুযায়ী পণ্য দেখুন।'
             },
@@ -911,13 +927,13 @@
                 remove: 'Remove',
                 moveToCart: 'Add to Cart',
                 dropTitle: 'Everything Everywhere All at Once',
-                dropSubtitle: 'Limited drop of random products. Every click is a surprise!',
+                dropSubtitle: 'Limited-stock items across all categories, available in a single variant.',
                 dropLimitedBadge: '⚡ Limited stock',
                 dropBtn: 'Click here',
                 dropLinkText: 'EEAAO',
                 dropQty: 'Stock',
                 dropSoldOut: 'Sold out',
-                dropEmpty: 'No drop right now. Try again!',
+                dropEmpty: 'No limited items right now. Please check back soon.',
                 dropAdd: 'Quick add',
                 sectionSubtitle: 'Browse products by your selected category.'
             }
@@ -984,6 +1000,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderCategories();
             renderProducts();
+            renderDrop();
             updateUI();
         });
 
@@ -1395,6 +1412,8 @@
 
             if (cart.length === 0) {
                 container.innerHTML = '<div class="loading">' + (currentLang === 'bn' ? 'কার্ট খালি' : 'Cart is empty') + '</div>';
+                document.getElementById('subtotal').textContent = '৳0';
+                document.getElementById('total').textContent = '৳0';
                 return;
             }
 
@@ -1506,6 +1525,7 @@
         function updateUI() {
             document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('wishlistCount').textContent = wishlist.length;
+            updateCartTotal();
 
             if (document.getElementById('cartSidebar').classList.contains('active')) {
                 renderCartSidebar();
