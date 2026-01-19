@@ -1,930 +1,804 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Shohoz Bazar — Shop Easy, Live Easy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উৎসব - Uthsob E-Commerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+        }
 
-  <!-- Netlify Identity (for Admin + optional user login) -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Bengali', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
 
-  <style>
-    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  </style>
+        /* Header */
+        header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: var(--primary);
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-main {
+            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .action-btn {
+            position: relative;
+            background: var(--light);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .lang-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Categories */
+        .categories {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .category-btn {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 30px 0;
+            min-height: 60vh;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: var(--light);
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stars {
+            color: var(--secondary);
+        }
+
+        .price-section {
+            margin: 10px 0;
+        }
+
+        .discount-badge {
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .discounted-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-left: 10px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-icon {
+            padding: 10px;
+            width: 45px;
+        }
+
+        /* Product Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: var(--light);
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .thumbnail:hover, .thumbnail.active {
+            border-color: var(--primary);
+        }
+
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .quantity-input {
+            width: 80px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .reviews-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .review-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .review-form input, .review-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .review-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* Cart/Wishlist Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-total {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            background: var(--light);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .total-row.grand {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+
+        .footer-section a {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            margin: 8px 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #374151;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-main {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .product-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: var(--primary);
+        }
+    </style>
 </head>
-
-<body class="bg-slate-50">
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useEffect, useMemo, useState } = React;
-
-    // ===== CONFIG =====
-    const BRAND = {
-      name: "Shohoz Bazar",
-      tagline_bn: "সহজে কিনুন, সহজে থাকুন",
-      tagline_en: "Shop Easy, Live Easy",
-      phone: "+880 1703-842165",
-      email: "shohoz.bazzar.bd@gmail.com",
-      address: "Dhaka, Bangladesh",
-      messengerLink: "https://m.me/61582055433127",
-      pageId: "61582055433127",
-      freeShipThreshold: 500,
-      deliveryFee: 60,
-      logoText: "SB"
-    };
-
-    const formatBDT = (n) => "৳" + Number(n || 0).toLocaleString("en-US");
-    const discountedPrice = (price, pct) => {
-      const p = Number(price || 0);
-      const d = Number(pct || 0);
-      const out = Math.round(p - (p * d) / 100);
-      return Math.max(0, out);
-    };
-
-    const avgRating = (reviews=[]) => {
-      if (!reviews?.length) return 0;
-      const sum = reviews.reduce((s,r) => s + Number(r.stars || 0), 0);
-      return Math.round((sum / reviews.length) * 10) / 10; // float 1 decimal
-    };
-
-    const Stars = ({ value }) => {
-      const v = Math.max(0, Math.min(5, Number(value || 0)));
-      const full = Math.floor(v);
-      const half = (v - full) >= 0.5 ? 1 : 0;
-      const empty = 5 - full - half;
-      return (
-        <div className="inline-flex items-center gap-1">
-          {"★".repeat(full)}
-          {half ? "☆" : ""}
-          {"✩".repeat(empty)}
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="headerText">🎉 স্বাগতম! বিশেষ ছাড় পান সব পণ্যে</span>
+                    <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">English</button>
+                </div>
+            </div>
         </div>
-      );
-    };
-
-    const safeParse = (s, fallback) => { try { return JSON.parse(s); } catch { return fallback; } };
-
-    function App(){
-      const [lang, setLang] = useState("bn"); // bn/en
-      const t = useMemo(() => ({
-        bn: {
-          search: "পণ্য/ক্যাটাগরি খুঁজুন…",
-          shop: "শপ",
-          home: "হোম",
-          cart: "কার্ট",
-          wishlist: "ইচ্ছেতালিকা",
-          login: "লগইন",
-          admin: "অ্যাডমিন",
-          categories: "ক্যাটাগরি",
-          viewAll: "সব দেখুন",
-          addToCart: "কার্টে",
-          buyNow: "এখনই কিনুন",
-          details: "ডিটেইলস",
-          reviews: "রিভিউ",
-          out: "স্টক নেই",
-          inStock: "স্টকে আছে",
-          qty: "পরিমাণ",
-          subtotal: "সাবটোটাল",
-          delivery: "ডেলিভারি",
-          total: "মোট",
-          checkout: "Messenger দিয়ে অর্ডার",
-          copied: "কপি হয়েছে + Messenger খুলেছে",
-          continue: "শপিং চালিয়ে যান",
-          empty: "কার্ট খালি",
-          back: "ফিরে যান",
-          comment: "কমেন্ট",
-          submit: "সাবমিট",
-          loginHint: "লগইন ছাড়া ব্রাউজ করতে পারবেন।",
-        },
-        en: {
-          search: "Search products/categories…",
-          shop: "Shop",
-          home: "Home",
-          cart: "Cart",
-          wishlist: "Wishlist",
-          login: "Login",
-          admin: "Admin",
-          categories: "Categories",
-          viewAll: "View all",
-          addToCart: "Add",
-          buyNow: "Buy",
-          details: "Details",
-          reviews: "Reviews",
-          out: "Out of stock",
-          inStock: "In stock",
-          qty: "Qty",
-          subtotal: "Subtotal",
-          delivery: "Delivery",
-          total: "Total",
-          checkout: "Checkout via Messenger",
-          copied: "Copied + opened Messenger",
-          continue: "Continue shopping",
-          empty: "Cart is empty",
-          back: "Back",
-          comment: "Comment",
-          submit: "Submit",
-          loginHint: "Browsing works without login.",
-        }
-      })[lang], [lang]);
-
-      // Data
-      const [data, setData] = useState({ categories: [], products: [] });
-      const [loading, setLoading] = useState(true);
-      const [err, setErr] = useState("");
-
-      // Pages
-      const [page, setPage] = useState({ name: "home" }); // home | category | product | cart | wishlist
-      const [query, setQuery] = useState("");
-
-      // Cart/Wishlist persisted locally for each visitor
-      const [cart, setCart] = useState(() => safeParse(localStorage.getItem("sb_cart"), []));
-      const [wishlist, setWishlist] = useState(() => safeParse(localStorage.getItem("sb_wishlist"), []));
-
-      useEffect(() => localStorage.setItem("sb_cart", JSON.stringify(cart)), [cart]);
-      useEffect(() => localStorage.setItem("sb_wishlist", JSON.stringify(wishlist)), [wishlist]);
-
-      // Identity
-      const [user, setUser] = useState(null);
-
-      useEffect(() => {
-        // Load products.json
-        (async () => {
-          try {
-            setLoading(true); setErr("");
-            const res = await fetch("/data/products.json", { cache: "no-store" });
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            const json = await res.json();
-            setData({
-              categories: (json.categories || []).slice().sort((a,b) => (a.order||999) - (b.order||999)),
-              products: (json.products || [])
-            });
-          } catch(e){
-            setErr("Failed to load /data/products.json");
-          } finally {
-            setLoading(false);
-          }
-        })();
-
-        // Netlify Identity hooks
-        if (window.netlifyIdentity) {
-          window.netlifyIdentity.on("init", u => setUser(u || null));
-          window.netlifyIdentity.on("login", u => setUser(u || null));
-          window.netlifyIdentity.on("logout", () => setUser(null));
-          window.netlifyIdentity.init();
-        }
-      }, []);
-
-      const isAdmin = useMemo(() => {
-        // If you want roles: set app_metadata.roles includes "admin"
-        const roles = user?.app_metadata?.roles || [];
-        return Array.isArray(roles) && roles.includes("admin");
-      }, [user]);
-
-      const productsByCategory = useMemo(() => {
-        const map = new Map();
-        for (const c of data.categories) map.set(c.id, []);
-        for (const p of data.products) {
-          if (!map.has(p.category)) map.set(p.category, []);
-          map.get(p.category).push(p);
-        }
-        return map;
-      }, [data]);
-
-      const cartCount = useMemo(() => cart.reduce((s,i)=> s + Number(i.qty||0), 0), [cart]);
-
-      const cartSubtotal = useMemo(() => cart.reduce((s,i)=>{
-        const unit = discountedPrice(i.price, i.discount_percent);
-        return s + unit * Number(i.qty||0);
-      },0), [cart]);
-
-      const deliveryFee = useMemo(() => {
-        if (!cartSubtotal) return 0;
-        return cartSubtotal >= BRAND.freeShipThreshold ? 0 : BRAND.deliveryFee;
-      }, [cartSubtotal]);
-
-      const cartTotal = useMemo(() => cartSubtotal + deliveryFee, [cartSubtotal, deliveryFee]);
-
-      const addToCart = (p, qty=1) => {
-        const stock = Number(p.stock ?? 0);
-        if (stock <= 0) return;
-        setCart(prev => {
-          const ex = prev.find(x => x.id === p.id);
-          const add = Math.max(1, Number(qty||1));
-          if (ex) {
-            const nextQty = Math.min(Number(ex.qty||0) + add, stock);
-            return prev.map(x => x.id === p.id ? { ...x, qty: nextQty } : x);
-          }
-          return [...prev, { ...p, qty: Math.min(add, stock) }];
-        });
-      };
-
-      const setQty = (id, qty) => {
-        setCart(prev => prev
-          .map(x => {
-            if (x.id !== id) return x;
-            const stock = Number(x.stock ?? 0);
-            const q = Math.max(0, Math.min(stock || 999999, Number(qty||0)));
-            return { ...x, qty: q };
-          })
-          .filter(x => Number(x.qty||0) > 0)
-        );
-      };
-
-      const toggleWish = (p) => {
-        setWishlist(prev => prev.some(x => x.id === p.id)
-          ? prev.filter(x => x.id !== p.id)
-          : [...prev, p]
-        );
-      };
-
-      const filtered = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        if (!q) return data.products;
-        return data.products.filter(p => {
-          const s = ((p.name_en||"") + " " + (p.name_bn||"")).toLowerCase();
-          return s.includes(q);
-        });
-      }, [data, query]);
-
-      const copyText = async (text) => {
-        try { await navigator.clipboard.writeText(text); return true; }
-        catch {
-          const ta = document.createElement("textarea");
-          ta.value = text; document.body.appendChild(ta);
-          ta.select();
-          try { document.execCommand("copy"); } catch {}
-          document.body.removeChild(ta);
-          return true;
-        }
-      };
-
-      const checkoutMessenger = async () => {
-        if (!cart.length) return;
-        const lines = [];
-        lines.push("Shohoz Bazar Order");
-        lines.push("m.me/" + BRAND.pageId);
-        lines.push("");
-        lines.push("Items:");
-        for (const it of cart){
-          const unit = discountedPrice(it.price, it.discount_percent);
-          lines.push(`- ${it.name_en||""} / ${it.name_bn||""} (ID:${it.id}) x${it.qty} = ${unit * it.qty}`);
-        }
-        lines.push("");
-        lines.push("Subtotal: " + cartSubtotal);
-        lines.push("Delivery: " + deliveryFee);
-        lines.push("Total: " + cartTotal);
-        lines.push("");
-        lines.push("Name:");
-        lines.push("Phone:");
-        lines.push("Address:");
-        lines.push("Payment: COD / bKash / Nagad");
-        const msg = lines.join("\\n");
-
-        await copyText(msg);
-        window.open(BRAND.messengerLink, "_blank");
-        alert(t.copied);
-      };
-
-      const Header = () => (
-        <header className="sticky top-0 z-50 bg-white/85 backdrop-blur border-b border-slate-200">
-          <div className="bg-emerald-700 text-white text-sm py-2 px-4 text-center">
-            bKash/Nagad/COD • Free delivery over {formatBDT(BRAND.freeShipThreshold)} • {t.loginHint}
-          </div>
-
-          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-3">
-            <button
-              className="flex items-center gap-3"
-              onClick={()=> setPage({name:"home"})}
-            >
-              <div className="w-11 h-11 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-black">
-                {BRAND.logoText}
-              </div>
-              <div className="text-left">
-                <div className="font-black text-slate-900 leading-tight">{BRAND.name}</div>
-                <div className="text-xs text-slate-500 hidden sm:block">
-                  {lang === "bn" ? BRAND.tagline_bn : BRAND.tagline_en}
-                </div>
-              </div>
-            </button>
-
-            <div className="flex-1 hidden md:block">
-              <div className="relative">
-                <input
-                  value={query}
-                  onChange={(e)=> setQuery(e.target.value)}
-                  placeholder={t.search}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-12 focus:outline-none focus:border-emerald-500"
-                />
-                <span className="absolute right-4 top-3.5 text-slate-400">🔎</span>
-              </div>
+        <div class="header-main container">
+            <div class="logo" onclick="showAllProducts()">উৎসব</div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="পণ্য খুঁজুন..." oninput="searchProducts()">
+                <button class="search-btn">🔍</button>
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                className="px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-400 font-black"
-                onClick={() => setLang(l => l === "bn" ? "en" : "bn")}
-                title="Language"
-              >
-                {lang === "bn" ? "EN" : "BN"}
-              </button>
-
-              <button
-                className="relative px-3 py-2 rounded-xl hover:bg-slate-100"
-                onClick={() => setPage({name:"wishlist"})}
-                title={t.wishlist}
-              >
-                ❤️
-                {wishlist.length>0 && (
-                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    {wishlist.length}
-                  </span>
-                )}
-              </button>
-
-              <button
-                className="relative px-3 py-2 rounded-xl hover:bg-slate-100"
-                onClick={() => setPage({name:"cart"})}
-                title={t.cart}
-              >
-                🛒
-                {cartCount>0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-700 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              <button
-                className="px-3 py-2 rounded-xl bg-slate-900 text-white font-black hover:bg-black"
-                onClick={() => window.netlifyIdentity ? window.netlifyIdentity.open() : alert("Identity not loaded")}
-                title={t.login}
-              >
-                {user ? "👤" : "🔐"}
-              </button>
-
-              {isAdmin && (
-                <a
-                  href="/admin/"
-                  className="px-3 py-2 rounded-xl border border-emerald-300 text-emerald-800 font-black hover:bg-emerald-50"
-                  title="Admin"
-                >
-                  {t.admin}
-                </a>
-              )}
-            </div>
-          </div>
-
-          <div className="max-w-6xl mx-auto px-4 pb-4 md:hidden">
-            <div className="relative">
-              <input
-                value={query}
-                onChange={(e)=> setQuery(e.target.value)}
-                placeholder={t.search}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 pr-10 focus:outline-none focus:border-emerald-500"
-              />
-              <span className="absolute right-3 top-2.5 text-slate-400">🔎</span>
-            </div>
-          </div>
-        </header>
-      );
-
-      const ProductCard = ({p}) => {
-        const title = (lang==="bn" ? (p.name_bn||p.name_en) : (p.name_en||p.name_bn)) || "";
-        const unit = discountedPrice(p.price, p.discount_percent);
-        const out = Number(p.stock ?? 0) <= 0;
-        const rating = avgRating(p.reviews || []);
-        const img = (p.images && p.images[0]) ? p.images[0] : null;
-        const wished = wishlist.some(x => x.id === p.id);
-
-        return (
-          <div className={"bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden " + (out ? "opacity-80" : "")}>
-            <button className="relative block w-full aspect-square bg-slate-100" onClick={()=> setPage({name:"product", id:p.id})}>
-              {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-5xl">🛍️</div>}
-              {Number(p.discount_percent||0) > 0 && !out && (
-                <div className="absolute top-3 left-3 bg-rose-600 text-white text-xs font-black px-2 py-1 rounded-xl">
-                  -{p.discount_percent}%
-                </div>
-              )}
-              {out && (
-                <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
-                  <div className="bg-white px-4 py-2 rounded-2xl font-black">{t.out}</div>
-                </div>
-              )}
-              <button
-                onClick={(e)=>{ e.stopPropagation(); toggleWish(p); }}
-                className="absolute top-3 right-3 bg-white/90 rounded-full px-3 py-2 shadow"
-                title="Wishlist"
-              >
-                {wished ? "❤️" : "🤍"}
-              </button>
-            </button>
-
-            <div className="p-4">
-              <button className="text-left font-black text-slate-900 line-clamp-2 hover:text-emerald-700" onClick={()=> setPage({name:"product", id:p.id})}>
-                {title}
-              </button>
-
-              <div className="mt-2 flex items-center justify-between text-sm">
-                <div className="text-slate-700">
-                  <span className="font-black">{rating || 0}</span>
-                  <span className="ml-2 text-amber-500"><Stars value={rating} /></span>
-                  <span className="ml-2 text-slate-500">({(p.reviews||[]).length} {t.reviews})</span>
-                </div>
-              </div>
-
-              <div className="mt-3 flex items-end gap-2">
-                <div className="text-xl font-black text-emerald-700">{formatBDT(unit)}</div>
-                {Number(p.discount_percent||0) > 0 && (
-                  <div className="text-sm text-slate-400 line-through">{formatBDT(p.price)}</div>
-                )}
-              </div>
-
-              <div className="mt-2 text-xs text-slate-600">
-                🚚 {p.delivery_text || "1-2 days"} • {out ? t.out : `${t.inStock}: ${p.stock}`}
-              </div>
-
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <button
-                  disabled={out}
-                  onClick={()=> addToCart(p, 1)}
-                  className={"rounded-2xl py-2 font-black " + (out ? "bg-slate-200 text-slate-500" : "bg-orange-500 hover:bg-orange-600 text-white")}
-                >
-                  {t.addToCart}
+            <div class="header-actions">
+                <button class="action-btn" onclick="toggleSidebar('wishlist')">
+                    ❤️ <span id="wishlistText">উইশলিস্ট</span>
+                    <span class="badge" id="wishlistCount">0</span>
                 </button>
-                <button
-                  disabled={out}
-                  onClick={()=> { addToCart(p, 1); setPage({name:"cart"}); }}
-                  className={"rounded-2xl py-2 font-black " + (out ? "bg-slate-200 text-slate-500" : "bg-emerald-700 hover:bg-emerald-800 text-white")}
-                >
-                  {t.buyNow}
+                <button class="action-btn" onclick="toggleSidebar('cart')">
+                    🛒 <span id="cartText">কার্ট</span>
+                    <span class="badge" id="cartCount">0</span>
                 </button>
-                <button
-                  onClick={()=> setPage({name:"product", id:p.id})}
-                  className="rounded-2xl py-2 font-black border border-slate-200 hover:border-emerald-400"
-                >
-                  {t.details}
-                </button>
-              </div>
             </div>
-          </div>
-        );
-      };
+        </div>
+    </header>
 
-      const Home = () => {
-        if (loading) return <div className="max-w-6xl mx-auto px-4 py-10 text-slate-600">Loading…</div>;
-        if (err) return <div className="max-w-6xl mx-auto px-4 py-10 text-rose-600">{err}</div>;
+    <!-- Categories -->
+    <div class="categories">
+        <div class="container">
+            <div class="category-nav" id="categoryNav"></div>
+        </div>
+    </div>
 
-        return (
-          <div>
-            <div className="max-w-6xl mx-auto px-4 py-10">
-              <div className="rounded-[32px] bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-500 text-white p-8 md:p-12 border border-white/20 shadow-sm">
-                <div className="inline-flex items-center gap-2 bg-white/15 border border-white/20 px-4 py-2 rounded-full text-sm font-black">
-                  bKash / Nagad / COD • Messenger Order
-                </div>
-                <h1 className="mt-4 text-3xl md:text-5xl font-black leading-tight">
-                  {lang==="bn" ? "Shohoz Bazar এ স্বাগতম" : "Welcome to Shohoz Bazar"}
-                </h1>
-                <p className="mt-3 text-white/90 text-base md:text-xl">
-                  {lang==="bn" ? "ক্যাটাগরি দেখে সহজে অর্ডার করুন" : "Browse categories and order easily"}
-                </p>
-                <div className="mt-6 flex gap-3 flex-wrap">
-                  <button onClick={()=> setPage({name:"shop"})} className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl font-black">
-                    {t.shop}
-                  </button>
-                  <a href={BRAND.messengerLink} target="_blank" className="bg-white/15 hover:bg-white/20 border border-white/30 px-6 py-3 rounded-2xl font-black">
-                    m.me/{BRAND.pageId}
-                  </a>
-                </div>
-              </div>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <h2 id="sectionTitle">সকল পণ্য</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="productDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="sidebar" id="cartSidebar">
+        <div class="sidebar-header">
+            <h3 id="cartSidebarTitle">আপনার কার্ট</h3>
+            <button class="modal-close" onclick="toggleSidebar('cart')">×</button>
+        </div>
+        <div class="sidebar-content" id="cartItems"></div>
+        <div class="cart-total">
+            <div class="total-row">
+                <span id="subtotalText">সাবটোটাল:</span>
+                <span id="subtotal">৳0</span>
             </div>
-
-            <div className="max-w-6xl mx-auto px-4 pb-14">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-slate-900">{t.categories}</h2>
-              </div>
-
-              <div className="mt-6 space-y-10">
-                {data.categories.map(cat => {
-                  const list = (productsByCategory.get(cat.id) || []).slice(0, 5);
-                  if (!list.length) return null;
-                  const catName = lang==="bn" ? (cat.name_bn || cat.name_en) : (cat.name_en || cat.name_bn);
-
-                  return (
-                    <section key={cat.id}>
-                      <div className="flex items-end justify-between gap-3">
-                        <button
-                          className="text-xl font-black text-slate-900 hover:text-emerald-700"
-                          onClick={()=> setPage({name:"category", id:cat.id})}
-                        >
-                          {catName}
-                        </button>
-                        <button className="text-emerald-700 font-black hover:underline" onClick={()=> setPage({name:"category", id:cat.id})}>
-                          {t.viewAll} →
-                        </button>
-                      </div>
-
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {list.map(p => <ProductCard key={p.id} p={p} />)}
-                      </div>
-                    </section>
-                  );
-                })}
-              </div>
+            <div class="total-row grand">
+                <span id="totalText">মোট:</span>
+                <span id="total">৳0</span>
             </div>
-          </div>
-        );
-      };
-
-      const CategoryPage = ({ catId }) => {
-        const cat = data.categories.find(c => c.id === catId);
-        const catName = cat ? (lang==="bn" ? (cat.name_bn || cat.name_en) : (cat.name_en || cat.name_bn)) : catId;
-        const list = (productsByCategory.get(catId) || []);
-
-        return (
-          <div className="max-w-6xl mx-auto px-4 py-10">
-            <button className="font-black text-emerald-700 hover:underline" onClick={()=> setPage({name:"home"})}>
-              ← {t.back}
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="checkout()">
+                <span id="checkoutText">চেকআউট করুন</span>
             </button>
-            <h1 className="mt-4 text-3xl font-black text-slate-900">{catName}</h1>
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {list.map(p => <ProductCard key={p.id} p={p} />)}
+        </div>
+    </div>
+
+    <!-- Wishlist Sidebar -->
+    <div class="sidebar" id="wishlistSidebar">
+        <div class="sidebar-header">
+            <h3 id="wishlistSidebarTitle">আপনার উইশলিস্ট</h3>
+            <button class="modal-close" onclick="toggleSidebar('wishlist')">×</button>
+        </div>
+        <div class="sidebar-content" id="wishlistItems"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 id="footerAbout">আমাদের সম্পর্কে</h3>
+                    <p id="footerDesc">উৎসব - আপনার পছন্দের পণ্যের জন্য সেরা গন্তব্য। আমরা মানসম্পন্ন পণ্য এবং সেরা সেবা প্রদান করি।</p>
+                </div>
+                <div class="footer-section">
+                    <h3 id="footerQuick">দ্রুত লিংক</h3>
+                    <a href="#" id="footerLink1">আমাদের সম্পর্কে</a>
+                    <a href="#" id="footerLink2">যোগাযোগ</a>
+                    <a href="#" id="footerLink3">শর্তাবলী</a>
+                    <a href="#" id="footerLink4">গোপনীয়তা নীতি</a>
+                </div>
+                <div class="footer-section">
+                    <h3 id="footerContact">যোগাযোগ</h3>
+                    <p>📧 info@uthsob.com</p>
+                    <p>📞 +880 1XXX-XXXXXX</p>
+                    <p>📍 ঢাকা, বাংলাদেশ</p>
+                </div>
+                <div class="footer-section">
+                    <h3 id="footerSocial">সামাজিক মিডিয়া</h3>
+                    <a href="https://business.facebook.com/latest/inbox/all/?nav_ref=manage_page_ap_plus_inbox_message_button&asset_id=741663552373046" target="_blank">📘 Facebook</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">🐦 Twitter</a>
+                </div>
             </div>
-          </div>
-        );
-      };
+            <div class="footer-bottom">
+                <p>&copy; 2026 উৎসব (Uthsob). <span id="footerRights">সকল অধিকার সংরক্ষিত।</span></p>
+            </div>
+        </div>
+    </footer>
 
-      const ProductPage = ({ id }) => {
-        const p = data.products.find(x => x.id === id);
-        if (!p) return (
-          <div className="max-w-6xl mx-auto px-4 py-10">
-            <button className="font-black text-emerald-700 hover:underline" onClick={()=> setPage({name:"home"})}>← {t.back}</button>
-            <div className="mt-6 text-slate-600">Product not found.</div>
-          </div>
-        );
+    <script>
+        // Language state
+        let currentLang = 'bn';
 
-        const title = (lang==="bn" ? (p.name_bn||p.name_en) : (p.name_en||p.name_bn)) || "";
-        const desc = (lang==="bn" ? (p.description_bn||"") : (p.description_en||"")) || "";
-        const unit = discountedPrice(p.price, p.discount_percent);
-        const rating = avgRating(p.reviews || []);
-        const out = Number(p.stock ?? 0) <= 0;
-
-        const [imgIdx, setImgIdx] = useState(0);
-        const [qty, setQtyLocal] = useState(1);
-        const [commentName, setCommentName] = useState("");
-        const [commentText, setCommentText] = useState("");
-        const [commentStars, setCommentStars] = useState(5);
-
-        const images = Array.isArray(p.images) ? p.images : [];
-        const main = images[imgIdx] || images[0] || null;
-
-        // Reviews are stored locally for visitors (demo). Global reviews would need backend/repo write.
-        const localKey = "sb_reviews_" + p.id;
-        const [localReviews, setLocalReviews] = useState(() => safeParse(localStorage.getItem(localKey), []));
-        useEffect(() => localStorage.setItem(localKey, JSON.stringify(localReviews)), [localReviews]);
-
-        const mergedReviews = [...(p.reviews||[]), ...localReviews];
-        const mergedRating = avgRating(mergedReviews);
-
-        const submitReview = () => {
-          const nm = commentName.trim() || "Anonymous";
-          const tx = commentText.trim();
-          if (!tx) return;
-          const st = Math.max(1, Math.min(5, Number(commentStars||5)));
-          setLocalReviews(prev => [{ name: nm, stars: st, comment: tx, ts: new Date().toISOString() }, ...prev]);
-          setCommentText("");
+        // Translation object
+        const translations = {
+            bn: {
+                headerText: '🎉 স্বাগতম! বিশেষ ছাড় পান সব পণ্যে',
+                langBtn: 'English',
+                searchPlaceholder: 'পণ্য খুঁজুন...',
+                wishlistText: 'উইশলিস্ট',
+                cartText: 'কার্ট',
+                allProducts: 'সকল পণ্য',
+                addToCart: 'কার্টে যোগ করুন',
+                buyNow: 'এখনই কিনুন',
+                reviews: 'রিভিউ',
+                description: 'বিবরণ',
+                quantity: 'পরিমাণ',
+                yourCart: 'আপনার কার্ট',
+                yourWishlist: 'আপনার উইশলিস্ট',
+                subtotal: 'সাবটোটাল:',
+                total: 'মোট:',
+                checkout: 'চেকআউট করুন',
+                footerAbout: 'আমাদের সম্পর্কে',
+                footerDesc: 'উৎসব - আপনার পছন্দের পণ্যের জন্য সেরা গন্তব্য। আমরা মানসম্পন্ন পণ্য এবং সেরা সেবা প্রদান করি।',
+                footerQuick: 'দ্রুত লিংক',
+                footerContact: 'যোগাযোগ',
+                footerSocial: 'সামাজিক মিডিয়া',
+                footerRights: 'সকল অধিকার সংরক্ষিত।',
+                footerLink1: 'আমাদের সম্পর্কে',
+                footerLink2: 'যোগাযোগ',
+                footerLink3: 'শর্তাবলী',
+                footerLink4: 'গোপনীয়তা নীতি',
+                submitReview: 'রিভিউ জমা দিন',
+                yourName: 'আপনার নাম',
+                yourReview: 'আপনার রিভিউ',
+                rating: 'রেটিং',
+                remove: 'সরান',
+                moveToCart: 'কার্টে যোগ করুন'
+            },
+            en: {
+                headerText: '🎉 Welcome! Get special discounts on all products',
+                langBtn: 'বাংলা',
+                searchPlaceholder: 'Search products...',
+                wishlistText: 'Wishlist',
+                cartText: 'Cart',
+                allProducts: 'All Products',
+                addToCart: 'Add to Cart',
+                buyNow: 'Buy Now',
+                reviews: 'Reviews',
+                description: 'Description',
+                quantity: 'Quantity',
+                yourCart: 'Your Cart',
+                yourWishlist: 'Your Wishlist',
+                subtotal: 'Subtotal:',
+                total: 'Total:',
+                checkout: 'Checkout',
+                footerAbout: 'About Us',
+                footerDesc: 'Uthsob - Your best destination for favorite products. We provide quality products and best service.',
+                footerQuick: 'Quick Links',
+                footerContact: 'Contact',
+                footerSocial: 'Social Media',
+                footerRights: 'All rights reserved.',
+                footerLink1: 'About Us',
+                footerLink2: 'Contact',
+                footerLink3: 'Terms & Conditions',
+                footerLink4: 'Privacy Policy',
+                submitReview: 'Submit Review',
+                yourName: 'Your Name',
+                yourReview: 'Your Review',
+                rating: 'Rating',
+                remove: 'Remove',
+                moveToCart: 'Add to Cart'
+            }
         };
 
-        return (
-          <div className="max-w-6xl mx-auto px-4 py-10">
-            <button className="font-black text-emerald-700 hover:underline" onClick={()=> setPage({name:"home"})}>
-              ← {t.back}
-            </button>
+        // Products database with demo data
+        const products = [
+            // Electronics
+            { id: 1, category: 'electronics', nameBn: 'স্মার্টফোন X10', nameEn: 'Smartphone X10', price: 25000, discount: 15, images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500', 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500'], descBn: 'সর্বশেষ প্রযুক্তি সহ উচ্চ মানের স্মার্টফোন। ৬.৫ ইঞ্চি ডিসপ্লে, ৮GB RAM, ১২৮GB স্টোরেজ।', descEn: 'High-quality smartphone with latest technology. 6.5-inch display, 8GB RAM, 128GB storage.', reviews: [{name: 'রহিম', rating: 5, comment: 'অসাধারণ ফোন!'}, {name: 'Karim', rating: 4, comment: 'Great value for money'}] },
+            { id: 2, category: 'electronics', nameBn: 'ওয়্যারলেস হেডফোন', nameEn: 'Wireless Headphones', price: 3500, discount: 20, images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500', 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500'], descBn: 'নয়েজ ক্যান্সেলিং ফিচার সহ উন্নত হেডফোন। দীর্ঘস্থায়ী ব্যাটারি লাইফ।', descEn: 'Advanced headphones with noise cancelling feature. Long-lasting battery life.', reviews: [{name: 'সালমা', rating: 5, comment: 'সাউন্ড কোয়ালিটি দুর্দান্ত'}] },
+            { id: 3, category: 'electronics', nameBn: 'স্মার্ট ওয়াচ', nameEn: 'Smart Watch', price: 4500, discount: 10, images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'], descBn: 'ফিটনেস ট্র্যাকিং এবং স্বাস্থ্য মনিটরিং ফিচার সহ স্মার্টওয়াচ।', descEn: 'Smartwatch with fitness tracking and health monitoring features.', reviews: [] },
+            { id: 4, category: 'electronics', nameBn: 'ব্লুটুথ স্পিকার', nameEn: 'Bluetooth Speaker', price: 2200, discount: 25, images: ['https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500'], descBn: 'পোর্টেবল এবং শক্তিশালী সাউন্ড কোয়ালিটি। ওয়াটারপ্রুফ ডিজাইন।', descEn: 'Portable with powerful sound quality. Waterproof design.', reviews: [{name: 'জামাল', rating: 4, comment: 'ভালো পণ্য'}] },
 
-            <div className="mt-6 grid md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden">
-                <div className="aspect-square bg-slate-100">
-                  {main ? <img src={main} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-6xl">🛍️</div>}
-                </div>
-                {images.length > 1 && (
-                  <div className="p-3 grid grid-cols-5 gap-2 bg-white">
-                    {images.slice(0,10).map((src, i)=> (
-                      <button
-                        key={i}
-                        className={"aspect-square rounded-2xl overflow-hidden border " + (i===imgIdx ? "border-emerald-500" : "border-slate-200")}
-                        onClick={()=> setImgIdx(i)}
-                      >
-                        <img src={src} className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-white rounded-3xl border border-slate-200 p-6">
-                <h1 className="text-2xl md:text-3xl font-black text-slate-900">{title}</h1>
-
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="text-slate-900 font-black">{mergedRating || 0}</div>
-                  <div className="text-amber-500"><Stars value={mergedRating} /></div>
-                  <div className="text-slate-500 text-sm">({mergedReviews.length} {t.reviews})</div>
-                </div>
-
-                <div className="mt-4 flex items-end gap-3">
-                  <div className="text-3xl font-black text-emerald-700">{formatBDT(unit)}</div>
-                  {Number(p.discount_percent||0) > 0 && (
-                    <>
-                      <div className="text-slate-400 line-through">{formatBDT(p.price)}</div>
-                      <div className="text-rose-600 font-black">-{p.discount_percent}%</div>
-                    </>
-                  )}
-                </div>
-
-                <div className="mt-3 text-sm text-slate-700">
-                  {out ? "⛔ " + t.out : "✅ " + t.inStock + ": " + (p.stock ?? 0)}
-                  <div className="mt-1 text-slate-600">🚚 {p.delivery_text || "1-2 days"}</div>
-                </div>
-
-                <div className="mt-6 flex items-center gap-3">
-                  <div className="font-black text-slate-900">{t.qty}</div>
-                  <div className="inline-flex items-center rounded-2xl border border-slate-200 overflow-hidden">
-                    <button className="px-4 py-2 hover:bg-slate-100 font-black" onClick={()=> setQtyLocal(q => Math.max(1, q-1))}>−</button>
-                    <input
-                      value={qty}
-                      onChange={(e)=> setQtyLocal(Math.max(1, Number(e.target.value||1)))}
-                      className="w-16 text-center py-2 outline-none"
-                      type="number"
-                      min="1"
-                    />
-                    <button className="px-4 py-2 hover:bg-slate-100 font-black" onClick={()=> setQtyLocal(q => q+1)}>+</button>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <button
-                    disabled={out}
-                    className={"rounded-2xl py-3 font-black " + (out ? "bg-slate-200 text-slate-500" : "bg-orange-500 hover:bg-orange-600 text-white")}
-                    onClick={()=> addToCart(p, qty)}
-                  >
-                    {t.addToCart}
-                  </button>
-                  <button
-                    disabled={out}
-                    className={"rounded-2xl py-3 font-black " + (out ? "bg-slate-200 text-slate-500" : "bg-emerald-700 hover:bg-emerald-800 text-white")}
-                    onClick={()=> { addToCart(p, qty); setPage({name:"cart"}); }}
-                  >
-                    {t.buyNow}
-                  </button>
-                </div>
-
-                {desc && (
-                  <div className="mt-6 border-t pt-4">
-                    <div className="font-black text-slate-900 mb-2">Description</div>
-                    <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{desc}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Reviews (local demo) */}
-            <div className="mt-8 bg-white rounded-3xl border border-slate-200 p-6">
-              <div className="flex items-end justify-between gap-3">
-                <div>
-                  <div className="text-xl font-black text-slate-900">{t.reviews}</div>
-                  <div className="text-sm text-slate-600">Overall: <span className="font-black">{mergedRating || 0}</span> / 5</div>
-                </div>
-              </div>
-
-              <div className="mt-5 grid md:grid-cols-3 gap-3">
-                <input className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Name (optional)" value={commentName} onChange={(e)=>setCommentName(e.target.value)} />
-                <select className="rounded-2xl border border-slate-200 px-4 py-3" value={commentStars} onChange={(e)=>setCommentStars(e.target.value)}>
-                  <option value="5">5 ★</option><option value="4">4 ★</option><option value="3">3 ★</option><option value="2">2 ★</option><option value="1">1 ★</option>
-                </select>
-                <button className="rounded-2xl bg-slate-900 text-white font-black hover:bg-black" onClick={submitReview}>
-                  {t.submit}
-                </button>
-              </div>
-              <textarea className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder={t.comment} value={commentText} onChange={(e)=>setCommentText(e.target.value)} />
-
-              <div className="mt-6 space-y-3">
-                {mergedReviews.length === 0 ? (
-                  <div className="text-slate-600">No reviews yet.</div>
-                ) : mergedReviews.map((r, idx)=> (
-                  <div key={idx} className="rounded-2xl border border-slate-200 p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="font-black text-slate-900">{r.name || "Anonymous"}</div>
-                      <div className="text-amber-500"><Stars value={r.stars} /></div>
-                    </div>
-                    <div className="mt-2 text-slate-700 text-sm">{r.comment}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const CartPage = () => (
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <h1 className="text-3xl font-black text-slate-900">{t.cart} ({cartCount})</h1>
-
-          {!cart.length ? (
-            <div className="mt-6 bg-white rounded-3xl border border-slate-200 p-10 text-center">
-              <div className="text-6xl">🛒</div>
-              <div className="mt-3 font-black text-slate-900">{t.empty}</div>
-              <button className="mt-6 px-6 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black" onClick={()=> setPage({name:"home"})}>
-                {t.continue}
-              </button>
-            </div>
-          ) : (
-            <div className="mt-6 grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-3">
-                {cart.map(it => {
-                  const unit = discountedPrice(it.price, it.discount_percent);
-                  const img = (it.images && it.images[0]) ? it.images[0] : null;
-                  const title = (lang==="bn" ? (it.name_bn||it.name_en) : (it.name_en||it.name_bn)) || "";
-                  return (
-                    <div key={it.id} className="bg-white rounded-3xl border border-slate-200 p-4 flex gap-4">
-                      <button className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100" onClick={()=> setPage({name:"product", id: it.id})}>
-                        {img ? <img src={img} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🛍️</div>}
-                      </button>
-
-                      <div className="flex-1">
-                        <button className="text-left font-black text-slate-900 hover:text-emerald-700" onClick={()=> setPage({name:"product", id: it.id})}>
-                          {title}
-                        </button>
-                        <div className="mt-1 text-sm text-slate-600">
-                          Unit: <span className="font-black text-emerald-700">{formatBDT(unit)}</span>
-                          {Number(it.discount_percent||0) > 0 && (
-                            <span className="ml-2 text-slate-400 line-through">{formatBDT(it.price)}</span>
-                          )}
-                        </div>
-                        <div className="mt-2 inline-flex items-center rounded-2xl border border-slate-200 overflow-hidden">
-                          <button className="px-4 py-2 hover:bg-slate-100 font-black" onClick={()=> setQty(it.id, Number(it.qty||1)-1)}>−</button>
-                          <input
-                            value={it.qty}
-                            onChange={(e)=> setQty(it.id, e.target.value)}
-                            className="w-16 text-center py-2 outline-none"
-                            type="number"
-                            min="1"
-                          />
-                          <button className="px-4 py-2 hover:bg-slate-100 font-black" onClick={()=> setQty(it.id, Number(it.qty||1)+1)}>+</button>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <div className="font-black text-slate-900">{formatBDT(unit * Number(it.qty||0))}</div>
-                        <button className="mt-2 text-rose-600 font-black hover:underline" onClick={()=> setQty(it.id, 0)}>
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="bg-white rounded-3xl border border-slate-200 p-6 h-fit sticky top-28">
-                <div className="text-xl font-black text-slate-900">Summary</div>
-                <div className="mt-4 space-y-2 text-slate-700">
-                  <div className="flex justify-between"><span className="font-black">{t.subtotal}</span><span className="font-black">{formatBDT(cartSubtotal)}</span></div>
-                  <div className="flex justify-between"><span className="font-black">{t.delivery}</span><span className="font-black">{deliveryFee ? formatBDT(deliveryFee) : "FREE"}</span></div>
-                  <div className="pt-3 border-t flex justify-between text-lg">
-                    <span className="font-black">{t.total}</span>
-                    <span className="font-black text-emerald-700">{formatBDT(cartTotal)}</span>
-                  </div>
-                </div>
-
-                <button onClick={checkoutMessenger} className="mt-5 w-full rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white py-3 font-black">
-                  {t.checkout}
-                </button>
-
-                <a className="block text-center mt-3 text-emerald-700 font-black hover:underline" href={BRAND.messengerLink} target="_blank">
-                  m.me/{BRAND.pageId} →
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-
-      const WishlistPage = () => (
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <h1 className="text-3xl font-black text-slate-900">{t.wishlist} ({wishlist.length})</h1>
-          {!wishlist.length ? (
-            <div className="mt-6 bg-white rounded-3xl border border-slate-200 p-10 text-center text-slate-600">
-              No items yet.
-            </div>
-          ) : (
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {wishlist.map(p => <ProductCard key={p.id} p={p} />)}
-            </div>
-          )}
-        </div>
-      );
-
-      const Shop = () => (
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <h1 className="text-3xl font-black text-slate-900">{t.shop}</h1>
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {filtered.map(p => <ProductCard key={p.id} p={p} />)}
-          </div>
-        </div>
-      );
-
-      const Footer = () => (
-        <footer className="mt-16 bg-slate-950 text-white">
-          <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="font-black text-lg">{BRAND.name}</div>
-              <div className="mt-2 text-white/70 text-sm">
-                {lang==="bn" ? "বাংলাদেশের জন্য সহজ অনলাইন বাজার।" : "Easy online store for Bangladesh."}
-              </div>
-              <a href={BRAND.messengerLink} target="_blank" className="inline-flex mt-4 rounded-2xl bg-emerald-700 hover:bg-emerald-600 px-4 py-2 font-black">
-                m.me/{BRAND.pageId}
-              </a>
-            </div>
-
-            <div className="text-sm text-white/70">
-              <div className="font-black text-white mb-3">Support</div>
-              <div>📞 {BRAND.phone}</div>
-              <div>📧 {BRAND.email}</div>
-              <div>📍 {BRAND.address}</div>
-            </div>
-
-            <div className="text-sm text-white/70">
-              <div className="font-black text-white mb-3">Policies</div>
-              <div>Return & Refund</div>
-              <div>Privacy Policy</div>
-              <div>Terms</div>
-            </div>
-
-            <div className="text-sm text-white/70">
-              <div className="font-black text-white mb-3">Quick Links</div>
-              <div>About</div>
-              <div>Contact</div>
-              <div>FAQ</div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 py-6 text-center text-white/50 text-sm">
-            © 2026 Shohoz Bazar. All rights reserved.
-          </div>
-        </footer>
-      );
-
-      const MobileNav = () => (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg md:hidden z-50">
-          <div className="grid grid-cols-4 p-2">
-            <button className="py-2 font-black" onClick={()=> setPage({name:"home"})}>🏠</button>
-            <button className="py-2 font-black" onClick={()=> setPage({name:"shop"})}>🛍️</button>
-            <button className="py-2 font-black" onClick={()=> setPage({name:"wishlist"})}>❤️</button>
-            <button className="py-2 font-black relative" onClick={()=> setPage({name:"cart"})}>
-              🛒
-              {cartCount>0 && (
-                <span className="absolute top-1 right-6 bg-emerald-700 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-      );
-
-      const Main = () => {
-        if (page.name === "home") return <Home />;
-        if (page.name === "shop") return <Shop />;
-        if (page.name === "category") return <CategoryPage catId={page.id} />;
-        if (page.name === "product") return <ProductPage id={page.id} />;
-        if (page.name === "cart") return <CartPage />;
-        if (page.name === "wishlist") return <WishlistPage />;
-        return <Home />;
-      };
-
-      return (
-        <div className="min-h-screen">
-          <Header />
-          <main className="pb-20 md:pb-0">
-            <Main />
-          </main>
-          <Footer />
-          <MobileNav />
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-  </script>
-
-  <script>
-    // Optional: if user logs in, you can show something custom. Admin access is via /admin
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("login", () => window.netlifyIdentity.close());
-    }
-  </script>
-</body>
-</html>
+            // Fashion
+            { id: 5, category: 'fashion', nameBn: 'ক্যাজুয়াল টি-শার্ট', nameEn: 'Casual T-Shirt', price: 800, discount: 30, images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500'], descBn: '১০০% কটন উপাদান। আরামদায়ক এবং স্টাইলিশ ডিজাইন। সব সাইজ পাওয়া য
